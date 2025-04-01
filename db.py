@@ -1,5 +1,7 @@
 import psycopg2
 
+from main import SessionLocal, Event
+
 DB_CONFIG = {
     "dbname": "tickets",
     "user": "postgres",
@@ -105,4 +107,46 @@ def get_event_info_by_id(event_id):
             "tickets": tickets
         }
 
+def create_event(title):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("INSERT INTO events (title) VALUES(%s)", (title,))
+
+def search_event(query):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("SELECT * FROM events WHERE title ILIKE %s;", (f"%{query}%",))
+
+        events = cur.fetchall()
+        return events
+
+def delete_event(query_delete):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM events WHERE title =%s", (query_delete,))
+
+def edit_event(event_name, new_event_name):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE events SET title = %s WHERE title = %s", (new_event_name, event_name,))
+
+def create_seat(seat_name: int):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("INSERT INTO seats (seat_name) VALUES(%s)", (seat_name,)) # перепроверить табличку
+
+def delete_seat(query_delete: int):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("DELETE FROM seats WHERE seat_name =%s", (query_delete,))
+
+def edit_seat(seat_name, new_seat_name):
+    with connect_db() as conn, conn.cursor() as cur:
+        cur.execute("UPDATE seats SET seat_name = %s WHERE seat_name = %s", (new_seat_name, seat_name,))
+
+# Доделать JOIN!!!
+
+def get_all_events_in_sqlAlchemyOrm():
+    with SessionLocal() as session:
+        return session.query(Event).all()
+
+def create_event_in_sqlAlchemyOr(title):
+    with SessionLocal() as session:
+        new_event = Event(title=title)
+        session.add(new_event)
+        session.commit()
 
