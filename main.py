@@ -1,73 +1,7 @@
 import db
-# from sqlalchemy import Column, Integer, String, create_engine
-# from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session, relationship
-#
-#
-# DATABASE_URL = "postgresql://postgres:secret@localhost/database" # перепроверить!!
-#
-# Base = DeclarativeBase()
-# engine = create_engine(DATABASE_URL)
-# SessionLocal = sessionmaker(bind = engine, expire_on_commit=False)
-#
-# class Base(DeclarativeBase):
-#     pass
-#
-# class Event(Base):
-#     __tablename__ = "Events"
-#
-#     id = Column(Integer, primary_key = True, index = True)
-#     title = Column(String(100), unique= True, index = True)
-#
-#     seats = relationship("EventsSeats", back_populates= "event")
-#     tickets = relationship("EventsTickets", back_populates= "event")
-#
-# class Seat(Base):
-#     __tablename__ = "Seats"
-#
-#     id = Column(Integer, primary_key = True, index = True)
-#     seat_name = Column(String(100), unique= True, index = True)
-#
-#     events = relationship("EventsSeats", back_populates= "seat")
-#
-# class Ticket(Base):
-#     __tablename__ = "Ticket"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     ticket_name = Column(String(100), unique=True, index=True)
-#
-#     events = relationship("EventsTickets", back_populates="ticket")
-#
-# class PRIMARYKey:
-#     pass
-#
-# class EventsSeats(Base):
-#     __tablename__ = "Events_seats"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     event_id = Column(Integer, PRIMARYKey("events.id", ondelete="CASCADE"))
-#     seat_id = Column(Integer, PRIMARYKey("seats.id", ondelete="CASCADE"))
-#
-#     event = relationship("Event", back_populates="seats")
-#     seat = relationship("Seat", back_populates="events")
-#
-# class EventsTickets(Base):
-#     __tablename__ = "Events_tickets"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     event_id = Column(Integer, PRIMARYKey("events.id", cascade="all, delete-orphan")) # разобраться!
-#     ticket_id = Column(Integer, PRIMARYKey("tickets.id", ondelete="CASCADE"))
-#
-#     event = relationship("Event", back_populates="tickets")
-#     ticket = relationship("Ticket", back_populates="events")
-#
-#     Base.metadata.create_all(engine) # не разобралась
 
 def init_db():
     print("База данных инициализирована!")
-#
-# def get_all_events():
-#     with SessionLocal() as session:
-#         return session.query(Event).all()
 
 def print_menu():
     print("Выберете нужную команду: ")
