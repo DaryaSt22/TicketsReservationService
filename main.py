@@ -1,73 +1,73 @@
 import db
-from sqlalchemy import Column, Integer, String, create_engine
-from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session, relationship
-
-DATABASE_URL = "postgresql://postgres:secret@localhost/test"
-
-Base = DeclarativeBase()
-engine = create_engine(DATABASE_URL)
-SessionLocal = sessionmaker(bind = engine, expire_on_commit=False)
-
-engine = create_engine(DATABASE_URL)
-class Base(DeclarativeBase):
-    pass
-
-class Event(Base):
-    __tablename__ = "Events"
-
-    id = Column(Integer, primary_key = True, index = True)
-    title = Column(String(100), unique= True, index = True)
-
-    seats = relationship("EventsSeats", back_populates= "event")
-    tickets = relationship("EventsTickets", back_populates="event")
-
-class Seat(Base):
-    __tablename__ = "Seats"
-
-    id = Column(Integer, primary_key = True, index = True)
-    seat_name = Column(String(100), unique= True, index = True)
-
-    events = relationship("EventsSeats", back_populates= "seat")
-
-class Ticket(Base):
-    __tablename__ = "Ticket"
-
-    id = Column(Integer, primary_key=True, index=True)
-    ticket_name = Column(String(100), unique=True, index=True)
-
-    events = relationship("EventsTickets", back_populates="ticket")
-
-class PRIMARYKey:
-    pass
-
-class EventsSeats(Base):
-    __tablename__ = "Events_seats"
-
-    id = Column(Integer, primary_key=True, index=True)
-    event_id = Column(Integer, PRIMARYKey("events.id", ondelete="CASCADE"))
-    seat_id = Column(Integer, PRIMARYKey("seats.id", ondelete="CASCADE"))
-
-    event = relationship("Event", back_populates="seats")
-    seat = relationship("Seat", back_populates="events")
-
-class EventsTickets(Base):
-    __tablename__ = "Events_tickets"
-
-    id = Column(Integer, primary_key=True, index=True)
-    event_id = Column(Integer, PRIMARYKey("events.id", ondelete="CASCADE"))
-    ticket_id = Column(Integer, PRIMARYKey("tickets.id", ondelete="CASCADE"))
-
-    event = relationship("Event", back_populates="tickets")
-    ticket = relationship("Ticket", back_populates="events")
-
-    Base.metadata.create_all(engine)
+# from sqlalchemy import Column, Integer, String, create_engine
+# from sqlalchemy.orm import DeclarativeBase, sessionmaker, Session, relationship
+#
+#
+# DATABASE_URL = "postgresql://postgres:secret@localhost/database" # перепроверить!!
+#
+# Base = DeclarativeBase()
+# engine = create_engine(DATABASE_URL)
+# SessionLocal = sessionmaker(bind = engine, expire_on_commit=False)
+#
+# class Base(DeclarativeBase):
+#     pass
+#
+# class Event(Base):
+#     __tablename__ = "Events"
+#
+#     id = Column(Integer, primary_key = True, index = True)
+#     title = Column(String(100), unique= True, index = True)
+#
+#     seats = relationship("EventsSeats", back_populates= "event")
+#     tickets = relationship("EventsTickets", back_populates= "event")
+#
+# class Seat(Base):
+#     __tablename__ = "Seats"
+#
+#     id = Column(Integer, primary_key = True, index = True)
+#     seat_name = Column(String(100), unique= True, index = True)
+#
+#     events = relationship("EventsSeats", back_populates= "seat")
+#
+# class Ticket(Base):
+#     __tablename__ = "Ticket"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     ticket_name = Column(String(100), unique=True, index=True)
+#
+#     events = relationship("EventsTickets", back_populates="ticket")
+#
+# class PRIMARYKey:
+#     pass
+#
+# class EventsSeats(Base):
+#     __tablename__ = "Events_seats"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     event_id = Column(Integer, PRIMARYKey("events.id", ondelete="CASCADE"))
+#     seat_id = Column(Integer, PRIMARYKey("seats.id", ondelete="CASCADE"))
+#
+#     event = relationship("Event", back_populates="seats")
+#     seat = relationship("Seat", back_populates="events")
+#
+# class EventsTickets(Base):
+#     __tablename__ = "Events_tickets"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     event_id = Column(Integer, PRIMARYKey("events.id", cascade="all, delete-orphan")) # разобраться!
+#     ticket_id = Column(Integer, PRIMARYKey("tickets.id", ondelete="CASCADE"))
+#
+#     event = relationship("Event", back_populates="tickets")
+#     ticket = relationship("Ticket", back_populates="events")
+#
+#     Base.metadata.create_all(engine) # не разобралась
 
 def init_db():
     print("База данных инициализирована!")
-
-def get_all_events():
-    with SessionLocal() as session:
-        return session.query(Event).all()
+#
+# def get_all_events():
+#     with SessionLocal() as session:
+#         return session.query(Event).all()
 
 def print_menu():
     print("Выберете нужную команду: ")
@@ -83,7 +83,10 @@ def print_menu():
     print("9. Добавить место(seat)")
     print("10. Удалить место(seat)")
     print("11. Редактирование места(seat)")
-
+    print("12. Поиск места по названию")
+    print("13. Поиск билета по названию")
+    print("14. Добавить бронирование билета")
+    print("15. Отменить бронирование билета")
 
 def app():
     db.init_db()
@@ -211,6 +214,47 @@ def app():
             except Exception as e:
                 print(f"Что-то пошло не так! {e}")
 
+        elif cmd == 12:
+            print("=" * 20)
+            query = input("Введите название или часть названия места: ")
+
+            seats = db.search_seat(query)
+            for seat in seats:
+                print(f"ID: {seat[0]} - Title: {seat[1]}.")
+            print("=" * 20)
+
+        elif cmd == 13:
+            print("=" * 20)
+            query = input("Введите название или часть названия билета: ")
+
+            tickets = db.search_ticket(query)
+            for ticket in tickets:
+                print(f"ID: {ticket[0]} - Title: {ticket[1]}.")
+            print("=" * 20)
+
+        elif cmd == 14:
+            print("=" * 20)
+            print("\nСписок билетов: ")
+            tickets = db.get_all_tickets_by_booking_status(False)
+            for ticket in tickets:
+                print(f"ID: {ticket[0]} - Ticket: {ticket[1]}.")
+            print("=" * 20)
+            ticket_id = input("Введите билет (id) для бронирования: ")
+            db.edit_ticket_booking(ticket_id, True)
+            print("Вы забронировали билет!")
+            print("=" * 20)
+
+        elif cmd == 15:
+            print("=" * 20)
+            print("\nСписок билетов: ")
+            tickets = db.get_all_tickets_by_booking_status(True)
+            for ticket in tickets:
+                print(f"ID: {ticket[0]} - Ticket: {ticket[1]}.")
+            print("=" * 20)
+            ticket_id = input("Введите билет (id) для бронирования: ")
+            db.edit_ticket_booking(ticket_id, False)
+            print("Вы отменили бронь билета!")
+            print("=" * 20)
 
         else:
             print("Вы ввели несуществующую команду. Попробуйте еще раз!")
