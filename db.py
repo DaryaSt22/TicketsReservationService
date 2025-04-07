@@ -1,6 +1,5 @@
 import psycopg2
 
-# from main import SessionLocal, Event
 
 DB_CONFIG = {
     "dbname": "tickets",
@@ -60,15 +59,6 @@ def init_db():
                 ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE 
             );
         """)
-
-        # cur.execute("""
-        #     CREATE TABLE IF NOT EXISTS tickets_bookings
-        #     (
-        #         id SERIAL PRIMARY KEY,
-        #         is_booked BOOLEAN NOT NULL DEFAULT FALSE,
-        #         ticket_id INT REFERENCES tickets(id) ON DELETE CASCADE
-        #     );
-        # """)
 
 
 def get_all_events():
@@ -169,25 +159,4 @@ def edit_ticket_booking(ticket_id, is_booked):
     with connect_db() as conn, conn.cursor() as cur:
         cur.execute("UPDATE tickets SET is_booked = %s WHERE id = %s", (is_booked, ticket_id,))
 
-# def create_ticket_booking(ticked_id: int):
-#     with connect_db() as conn, conn.cursor() as cur:
-#         cur.execute("INSERT INTO tickets_bookings (ticked_id) VALUES(%s)", (ticked_id,))
-#
-# def delete_tickets_bookings(ticked_id: int):
-#     with connect_db() as conn, conn.cursor() as cur:
-#         cur.execute("DELETE FROM tickets_bookings WHERE ticked_id =%s", (ticked_id,))
-
-
-
-# Доделать JOIN!!!
-
-# def get_all_events_in_sqlAlchemyOrm():
-#     with SessionLocal() as session:
-#         return session.query(Event).all()
-#
-# def create_event_in_sqlAlchemyOr(title):
-#     with SessionLocal() as session:
-#         new_event = Event(title=title)
-#         session.add(new_event)
-#         session.commit()
 
